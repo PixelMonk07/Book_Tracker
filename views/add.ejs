@@ -1,0 +1,101 @@
+<%- include('partials/header', { title: 'Add New Book', currentPage: 'add' }) %>
+
+<div class="page-title">
+    <h1>Add New Book</h1>
+    <p>Share your thoughts on your latest read</p>
+</div>
+
+<div class="form-container">
+    <% if (typeof error !== 'undefined' && error) { %>
+        <div class="error-message">
+            <%= error %>
+        </div>
+    <% } %>
+
+    <% if (typeof success !== 'undefined' && success) { %>
+        <div class="success-message">
+            <%= success %>
+        </div>
+    <% } %>
+
+    <form action="/add" method="POST" novalidate>
+        <div class="form-group">
+            <label for="isbn">ISBN (Optional)</label>
+            <div class="isbn-lookup">
+                <input type="text" 
+                       id="isbn" 
+                       name="isbn" 
+                       placeholder="Enter ISBN to auto-fill book details"
+                       value="<%= typeof formData !== 'undefined' ? formData.isbn || '' : '' %>">
+                <button type="button" class="isbn-lookup-btn" title="Look up book details">🔍</button>
+            </div>
+            <small style="color: #666; font-size: 0.85rem; margin-top: 0.25rem; display: block;">
+                Enter the ISBN and click the search button to automatically fill in book details
+            </small>
+        </div>
+
+        <div class="form-group">
+            <label for="title">Book Title *</label>
+            <input type="text" 
+                   id="title" 
+                   name="title" 
+                   required 
+                   placeholder="Enter the book title"
+                   value="<%= typeof formData !== 'undefined' ? formData.title || '' : '' %>">
+        </div>
+
+        <div class="form-group">
+            <label for="author">Author *</label>
+            <input type="text" 
+                   id="author" 
+                   name="author" 
+                   required 
+                   placeholder="Enter the author's name"
+                   value="<%= typeof formData !== 'undefined' ? formData.author || '' : '' %>">
+        </div>
+
+        <div class="form-group">
+            <label for="rating">Rating (1-5)</label>
+            <select id="rating" name="rating">
+                <option value="">Select a rating</option>
+                <option value="1" <%= typeof formData !== 'undefined' && formData.rating == '1' ? 'selected' : '' %>>⭐ 1 - Didn't like it</option>
+                <option value="2" <%= typeof formData !== 'undefined' && formData.rating == '2' ? 'selected' : '' %>>⭐⭐ 2 - It was okay</option>
+                <option value="3" <%= typeof formData !== 'undefined' && formData.rating == '3' ? 'selected' : '' %>>⭐⭐⭐ 3 - Liked it</option>
+                <option value="4" <%= typeof formData !== 'undefined' && formData.rating == '4' ? 'selected' : '' %>>⭐⭐⭐⭐ 4 - Really liked it</option>
+                <option value="5" <%= typeof formData !== 'undefined' && formData.rating == '5' ? 'selected' : '' %>>⭐⭐⭐⭐⭐ 5 - It was amazing</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="date_read">Date Read</label>
+            <input type="date" 
+                   id="date_read" 
+                   name="date_read"
+                   value="<%= typeof formData !== 'undefined' ? formData.date_read || '' : '' %>">
+        </div>
+
+        <div class="form-group">
+            <label for="notes">My Notes & Thoughts</label>
+            <textarea id="notes" 
+                      name="notes" 
+                      rows="6" 
+                      placeholder="What did you think about this book? Key takeaways, favorite quotes, or anything else you'd like to remember..."><%= typeof formData !== 'undefined' ? formData.notes || '' : '' %></textarea>
+            <small style="color: #666; font-size: 0.85rem; margin-top: 0.25rem; display: block;">
+                Share your thoughts, favorite quotes, or key takeaways from the book
+            </small>
+        </div>
+
+        <div class="form-actions">
+            <a href="/" class="btn-secondary">← Back to Books</a>
+            <button type="submit" class="btn-primary">📚 Add Book</button>
+        </div>
+    </form>
+</div>
+
+<div style="text-align: center; margin-top: 2rem; color: white; opacity: 0.8;">
+    <p style="font-size: 0.9rem;">
+        💡 <strong>Tip:</strong> Use the ISBN lookup to quickly fill in book details, or enter them manually if you prefer
+    </p>
+</div>
+
+<%- include('partials/footer') %>

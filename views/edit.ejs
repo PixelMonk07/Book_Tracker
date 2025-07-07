@@ -1,0 +1,146 @@
+<%- include('partials/header', { title: 'Edit Book', currentPage: 'edit' }) %>
+
+<div class="page-title">
+    <h1>Edit Book</h1>
+    <p>Update your thoughts and details</p>
+</div>
+
+<div class="form-container">
+    <% if (typeof error !== 'undefined' && error) { %>
+        <div class="error-message">
+            <%= error %>
+        </div>
+    <% } %>
+
+    <% if (typeof success !== 'undefined' && success) { %>
+        <div class="success-message">
+            <%= success %>
+        </div>
+    <% } %>
+
+    <% if (typeof book !== 'undefined' && book) { %>
+        <form action="/edit/<%= book.id %>" method="POST" novalidate>
+            <div class="form-group">
+                <label for="isbn">ISBN</label>
+                <div class="isbn-lookup">
+                    <input type="text" 
+                           id="isbn" 
+                           name="isbn" 
+                           placeholder="Enter ISBN (optional)"
+                           value="<%= book.isbn || '' %>">
+                    <button type="button" class="isbn-lookup-btn" title="Look up book details">🔍</button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="title">Book Title *</label>
+                <input type="text" 
+                       id="title" 
+                       name="title" 
+                       required 
+                       placeholder="Enter the book title"
+                       value="<%= book.title || '' %>">
+            </div>
+
+            <div class="form-group">
+                <label for="author">Author *</label>
+                <input type="text" 
+                       id="author" 
+                       name="author" 
+                       required 
+                       placeholder="Enter the author's name"
+                       value="<%= book.author || '' %>">
+            </div>
+
+            <div class="form-group">
+                <label for="rating">Rating (1-5)</label>
+                <select id="rating" name="rating">
+                    <option value="">Select a rating</option>
+                    <option value="1" <%= book.rating == 1 ? 'selected' : '' %>>⭐ 1 - Didn't like it</option>
+                    <option value="2" <%= book.rating == 2 ? 'selected' : '' %>>⭐⭐ 2 - It was okay</option>
+                    <option value="3" <%= book.rating == 3 ? 'selected' : '' %>>⭐⭐⭐ 3 - Liked it</option>
+                    <option value="4" <%= book.rating == 4 ? 'selected' : '' %>>⭐⭐⭐⭐ 4 - Really liked it</option>
+                    <option value="5" <%= book.rating == 5 ? 'selected' : '' %>>⭐⭐⭐⭐⭐ 5 - It was amazing</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="date_read">Date Read</label>
+                <input type="date" 
+                       id="date_read" 
+                       name="date_read"
+                       value="<%= book.date_read ? new Date(book.date_read).toISOString().split('T')[0] : '' %>">
+            </div>
+
+            <div class="form-group">
+                <label for="notes">My Notes & Thoughts</label>
+                <textarea id="notes" 
+                          name="notes" 
+                          rows="6" 
+                          placeholder="What did you think about this book? Key takeaways, favorite quotes, or anything else you'd like to remember..."><%= book.notes || '' %></textarea>
+            </div>
+
+            <div class="form-actions">
+                <a href="/" class="btn-secondary">← Back to Books</a>
+                <button type="submit" class="btn-primary">💾 Update Book</button>
+            </div>
+        </form>
+
+        <!-- Book Preview Card -->
+        <div style="margin-top: 3rem; padding-top: 2rem; border-top: 2px solid rgba(255,255,255,0.2);">
+            <h3 style="color: white; margin-bottom: 1rem; text-align: center;">Current Book Preview</h3>
+            <div class="book-card" data-isbn="<%= book.isbn || '' %>" style="max-width: 400px; margin: 0 auto;">
+                <div class="book-header">
+                    <% if (book.isbn) { %>
+                        <img src="https://covers.openlibrary.org/b/isbn/<%= book.isbn %>-M.jpg" 
+                             alt="<%= book.title %> cover" 
+                             class="book-cover"
+                             onerror="this.classList.add('placeholder'); this.textContent='No Cover'; this.style.backgroundImage='none';">
+                    <% } else { %>
+                        <div class="book-cover placeholder">No Cover Available</div>
+                    <% } %>
+                    
+                    <div class="book-info">
+                        <h3 class="book-title"><%= book.title %></h3>
+                        <p class="book-author">by <%= book.author %></p>
+                        
+                        <% if (book.rating) { %>
+                            <div class="book-rating">
+                                <div class="stars">
+                                    <% for (let i = 1; i <= 5; i++) { %>
+                                        <span class="star <%= i <= book.rating ? '' : 'empty' %>">
+                                            <%= i <= book.rating ? '★' : '☆' %>
+                                        </span>
+                                    <% } %>
+                                </div>
+                                <span>(<%= book.rating %>/5)</span>
+                            </div>
+                        <% } %>
+                        
+                        <% if (book.date_read) { %>
+                            <p class="book-date">
+                                Read on <%= new Date(book.date_read).toLocaleDateString('en-US', { 
+                                    year: 'numeric', 
+                                    month: 'long', 
+                                    day: 'numeric' 
+                                }) %>
+                            </p>
+                        <% } %>
+                    </div>
+                </div>
+                
+                <% if (book.notes && book.notes.trim()) { %>
+                    <div class="book-notes">
+                        <p><%= book.notes %></p>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    <% } else { %>
+        <div class="error-message">
+            Book not found. <a href="/" style="color: #721c24; text-decoration: underline;">Return to books list</a>
+        </div>
+    <% } %>
+</div>
+
+<%- include('partials/footer') %>

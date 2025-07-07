@@ -1,0 +1,100 @@
+<%- include('partials/header', { title: 'My Books', currentPage: 'home' }) %>
+
+<div class="page-title">
+    <h1>My Reading Journey</h1>
+    <p>Track your books, notes, and ratings in one beautiful place</p>
+</div>
+
+<div class="controls">
+    <div class="controls-row">
+        <a href="/add" class="add-book-btn">Add New Book</a>
+        
+        <div class="sort-controls">
+            <label for="sortBy">Sort by:</label>
+            <select id="sortBy" name="sortBy">
+                <option value="date_read" <%= sort === 'date_read' || !sort ? 'selected' : '' %>>Recently Read</option>
+                <option value="rating" <%= sort === 'rating' ? 'selected' : '' %>>Highest Rated</option>
+                <option value="title" <%= sort === 'title' ? 'selected' : '' %>>Title (A-Z)</option>
+                <option value="author" <%= sort === 'author' ? 'selected' : '' %>>Author (A-Z)</option>
+                <option value="created_at" <%= sort === 'created_at' ? 'selected' : '' %>>Recently Added</option>
+            </select>
+        </div>
+    </div>
+</div>
+
+<% if (books && books.length > 0) { %>
+    <div class="books-grid">
+        <% books.forEach(book => { %>
+            <div class="book-card" data-isbn="<%= book.isbn || '' %>">
+                <div class="book-header">
+                    <% if (book.isbn) { %>
+                        <img src="https://covers.openlibrary.org/b/isbn/<%= book.isbn %>-M.jpg" 
+                             alt="<%= book.title %> cover" 
+                             class="book-cover"
+                             onerror="this.classList.add('placeholder'); this.textContent='No Cover'; this.style.backgroundImage='none';">
+                    <% } else { %>
+                        <div class="book-cover placeholder">No Cover Available</div>
+                    <% } %>
+                    
+                    <div class="book-info">
+                        <h3 class="book-title"><%= book.title %></h3>
+                        <p class="book-author">by <%= book.author %></p>
+                        
+                        <% if (book.rating) { %>
+                            <div class="book-rating">
+                                <div class="stars">
+                                    <% for (let i = 1; i <= 5; i++) { %>
+                                        <span class="star <%= i <= book.rating ? '' : 'empty' %>">
+                                            <%= i <= book.rating ? '★' : '☆' %>
+                                        </span>
+                                    <% } %>
+                                </div>
+                                <span>(<%= book.rating %>/5)</span>
+                            </div>
+                        <% } %>
+                        
+                        <% if (book.date_read) { %>
+                            <p class="book-date">
+                                Read on <%= new Date(book.date_read).toLocaleDateString('en-US', { 
+                                    year: 'numeric', 
+                                    month: 'long', 
+                                    day: 'numeric' 
+                                }) %>
+                            </p>
+                        <% } %>
+                    </div>
+                </div>
+                
+                <% if (book.notes && book.notes.trim()) { %>
+                    <div class="book-notes">
+                        <p><%= book.notes.length > 200 ? book.notes.substring(0, 200) + '...' : book.notes %></p>
+                    </div>
+                <% } %>
+                
+                <div class="book-actions">
+                    <a href="/edit/<%= book.id %>" class="btn-edit">✏️ Edit</a>
+                    <a href="/delete/<%= book.id %>" class="btn-delete" onclick="return confirm('Are you sure you want to delete this book?')">🗑️ Delete</a>
+                </div>
+            </div>
+        <% }); %>
+    </div>
+<% } else { %>
+    <div class="empty-state">
+        <h2>📚 Start Your Reading Journey!</h2>
+        <p>You haven't added any books yet. Add your first book to begin tracking your reading adventures.</p>
+        <a href="/add" class="add-book-btn">Add Your First Book</a>
+    </div>
+<% } %>
+
+<% if (books && books.length > 0) { %>
+    <div style="text-align: center; margin-top: 3rem; color: white; opacity: 0.8;">
+        <p>📖 You've read <%= books.length %> book<%= books.length !== 1 ? 's' : '' %> so far!</p>
+        <% 
+        const avgRating = books.filter(b => b.rating).reduce((sum, b) => sum + b.rating, 0) / books.filter(b => b.rating).length;
+        if (avgRating) { %>
+            <p>⭐ Average rating: <%= avgRating.toFixed(1) %>/5</p>
+        <% } %>
+    </div>
+<% } %>
+
+<%- include('partials/footer') %>
